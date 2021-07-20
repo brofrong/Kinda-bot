@@ -1,5 +1,4 @@
 node_modules/
-constants.json
 build/
 .idea/
-./src/constants.ts
+src/constants.ts
