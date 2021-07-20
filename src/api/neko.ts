@@ -1,6 +1,6 @@
-const fetch = require('node-fetch');
+import * as fetch from 'node-fetch';
 
-async function getNeko(){
+export async function getNeko(){
     const res = await fetch("https://neko-love.xyz/api/v1/neko");
     const mat = await res.json();
 
@@ -10,5 +10,3 @@ async function getNeko(){
 
     return mat.url;
 }
-
-module.exports = {getNeko: getNeko};
