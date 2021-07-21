@@ -6,7 +6,6 @@
   "scripts": {
     "start": "tsc && node build/index.js",
     "start:dev": "ts-node-dev --respawn src/index.ts",
-    "watch": "nodemon",
     "build": "tsc"
   },
   "repository": {
@@ -29,6 +28,8 @@
     "@types/node": "^16.3.3",
     "ts-node-dev": "^1.1.8",
     "tslint": "^5.12.1",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3",
+    "npm": "^7.20.0",
+    "npm-cli": "^0.1.0"
   }
 }
