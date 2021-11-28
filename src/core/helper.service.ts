@@ -1,7 +1,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {Client, ClientProvider} from 'discord-nestjs';
 import {Guild, Message, MessageEmbed, TextChannel} from 'discord.js';
-import {BOT_CHANNEL, KINDA_GUILD} from './constants';
+import {BOT_CHANNEL, KINDA_GUILD, ROLE_CHANNEL} from './constants';
 
 @Injectable()
 export class HelperService {
@@ -21,7 +21,7 @@ export class HelperService {
     }
 
     public async sendLog(text: string) {
-        const botChannel = (await this.getGuild()).channels.cache.get(BOT_CHANNEL) as TextChannel;
+        const botChannel = (await this.getGuild()).channels.cache.get(ROLE_CHANNEL) as TextChannel;
         const embed = new MessageEmbed().setColor('#f5ee1d').setTitle(text);
         return botChannel.send(embed);
     }
