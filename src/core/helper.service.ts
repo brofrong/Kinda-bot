@@ -26,6 +26,12 @@ export class HelperService {
         return botChannel.send(embed);
     }
 
+    public async sendToBotChannel(text: string) {
+        const botChannel = (await this.getGuild()).channels.cache.get(BOT_CHANNEL) as TextChannel;
+        const embed = new MessageEmbed().setColor('#cc4de8').setTitle(text);
+        return botChannel.send(embed);
+    }
+
     public async getGuild(): Promise<Guild> {
         return this.discordProvider.getClient().guilds.fetch(KINDA_GUILD);
     }

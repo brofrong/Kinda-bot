@@ -70,7 +70,7 @@ export class RolesByReactionsService {
 
         const guild = await this.helperService.getGuild();
         await guild.member(user.id).roles.remove(role);
-        const roleName = guild.roles.cache.get(role);
+        const roleName = guild.roles.cache.get(role).name;
         await this.helperService.sendLog(`:negative_squared_cross_mark: Забрана роль ${roleName}, у пользователя ${user.username}`);
     }
 
