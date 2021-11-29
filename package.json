@@ -25,6 +25,7 @@
     "discord-nestjs": "^1.2.1",
     "discord.js": "^12.5.3",
     "ffmpeg-static": "^4.4.0",
+    "lodash": "^4.17.21",
     "lowdb": "^3.0.0",
     "moment": "^2.29.1",
     "node-fetch": "^2.6.1",

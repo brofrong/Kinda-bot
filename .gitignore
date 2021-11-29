@@ -1,8 +1,8 @@
-src/core/constants.ts
-
 # compiled output
 /dist
 /node_modules
+
+/src/core/token.ts
 
 # Logs
 logs
