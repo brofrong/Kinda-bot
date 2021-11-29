@@ -42,24 +42,30 @@ export class MusicService {
         @Content() content: PlayDto,
         @Context() [message]: [Message]
     ) {
-        if (message.member.voice.channel) {
-            this.connection = await message.member.voice.channel.join();
-            if (!this.dispatcher) {
-                await this.startPlay(content.url);
-
-                this.dispatcher.on('finish', () => this.playNext());
-                this.dispatcher.on('error', (e) => {
-                    this.logger.error(e);
-                    this.stopPlay();
-                });
-            } else {
-                this.queue.push(content.url);
-                const info = (await ytdl.getInfo(content.url)).videoDetails.title;
-                await this.helperService.sendSuccess(message, `Добавлен в очередь : ${info}, сейчас в очереди ${this.queue.length}`);
-            }
-        } else {
-            this.helperService.sendError(message, `Вы должны находиться в войсе!`);
+        if (!message.member.voice.channel) {
+            await this.helperService.sendError(message, `Вы должны находиться в войсе!`);
+            return;
         }
+        if (!ytdl.validateURL(content.url)) {
+            await this.helperService.sendError(message, `Не ввалидная ссылка`);
+            return;
+        }
+
+        this.connection = await message.member.voice.channel.join();
+        if (!this.dispatcher) {
+            await this.startPlay(content.url);
+
+            this.dispatcher.on('finish', () => this.playNext());
+            this.dispatcher.on('error', (e) => {
+                this.logger.error(e);
+                this.stopPlay();
+            });
+        } else {
+            this.queue.push(content.url);
+            const info = (await ytdl.getInfo(content.url)).videoDetails.title;
+            await this.helperService.sendSuccess(message, `Добавлен в очередь : ${info}, сейчас в очереди ${this.queue.length}`);
+        }
+
     }
 
     @OnCommand({name: 'stop'})
@@ -113,8 +119,8 @@ export class MusicService {
         const volume = await this.dbService.read(DB.MUSIC_VOLUME);
         this.dispatcher.setVolume(volume);
 
-        const info = await ytdl.getInfo(url)
-        this.helperService.sendToBotChannel(`Сейчас играет ${info.videoDetails.title} - ${moment.duration(info.videoDetails.lengthSeconds, 'seconds').humanize()}`);
+        const info = await ytdl.getInfo(url);
+        this.helperService.sendToBotChannel(`Сейчас играет ${info.videoDetails.title} - ${moment.utc(moment.duration(info.videoDetails.lengthSeconds, 'seconds').asMilliseconds()).format('HH:mm:ss')}`);
 
     }
 

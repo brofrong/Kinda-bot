@@ -8,9 +8,7 @@ export class DbService {
     private dbFileName = 'db.json';
 
     constructor() {
-        access(this.dbFileName).then(
-            (e) => console.log(e)
-        ).catch(
+        access(this.dbFileName).catch(
             () => writeFile(this.dbFileName, JSON.stringify({}))
         )
     }
