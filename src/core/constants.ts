@@ -1,4 +1,4 @@
-export const PREFIX = '/';
+export const PREFIX = '!';
 
 export const KINDA_GUILD = '168316514074755072'
 export const BOT_CHANNEL = '837007949556744232'
