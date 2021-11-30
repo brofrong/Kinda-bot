@@ -9,16 +9,25 @@ import {
     UsePipes,
     ValidationPipe
 } from 'discord-nestjs';
-import {Message, StreamDispatcher, TextChannel, VoiceConnection} from 'discord.js';
+import {Message, MessageEmbed, StreamDispatcher, TextChannel, VoiceConnection} from 'discord.js';
 import * as moment from 'moment';
+import {YouTubeSearchResults} from 'youtube-search';
 import * as ytdl from 'ytdl-core';
-import {DB, MUSIC_CHANNEL, WELCOME_CHANNEL} from '../core/constants';
+import {DB, MUSIC_CHANNEL, PREFIX, WELCOME_CHANNEL} from '../core/constants';
 import {DbService} from '../core/db/db.service';
 import {HelperService} from '../core/helper.service';
-import {PlayDto, VolumeDto} from './music.dto';
+import {YOUTUBE_API_KEY} from '../core/token';
+import {PlayDto, SelectDto, VolumeDto} from './music.dto';
 import {sample} from 'lodash';
+import * as youtubeSearch from "youtube-search";
 
-type cashedMusic = {id: string, time: number, url: string, authorID: string};
+export type cashedMusic = {id: string, time: number, url: string, authorID: string};
+export type SuggestedMusic = {title: string, url: string}
+
+const opts: youtubeSearch.YouTubeSearchOptions = {
+    maxResults: 10,
+    key: YOUTUBE_API_KEY
+};
 
 @Injectable()
 export class MusicService {
@@ -31,6 +40,8 @@ export class MusicService {
     private volume: number;
 
     private userTag = /<@(.*?)>/;
+
+    private suggestedVideos: SuggestedMusic[] = [];
 
     constructor(
         private helperService: HelperService,
@@ -57,21 +68,10 @@ export class MusicService {
         }
 
         if (this.userTag.test(content.url)) {
-            const userId = content.url.split(this.userTag)[1].replace('!', '');
-
-            const chasedMusic: cashedMusic[] = await this.dbService.read(DB.CHASED_MUSIC);
-
-            const userMusic = chasedMusic.filter((chased) => chased.authorID === userId);
-
-            if(userMusic.length === 0) {
-                await this.helperService.sendError(message, `У пользователя ${content.url} нет музыки`);
-                return;
-            }
-
-            const toPlay: cashedMusic = sample(userMusic);
-
-            await this.addToQueue(message, toPlay.url);
+            await this.playMusicByUser(content, message);
+            return;
         }
+        await this.searchMusic(message);
     }
 
     @OnCommand({name: 'stop'})
@@ -115,6 +115,21 @@ export class MusicService {
     @OnCommand({name: 'test'})
     async onTest(message: Message) {
         this.logger.log(message.content);
+    }
+
+    @OnCommand({name: 'select'})
+    @UsePipes(TransformPipe, ValidationPipe)
+    async onSelect(
+        @Content() content: SelectDto,
+        @Context() [message]: [Message]
+    ) {
+        if(this.suggestedVideos.length !== 0) {
+            const toPlay = this.suggestedVideos[content.select - 1].url;
+            this.suggestedVideos = null;
+            await this.addToQueue(message, toPlay);
+        } else {
+            await this.helperService.sendError(message, 'сейчас нет выбора');
+        }
     }
 
     private async addToQueue(message: Message, url: string) {
@@ -193,5 +208,45 @@ export class MusicService {
         const messages = await musicChannel.messages.fetch({after, before});
         let newMusic: cashedMusic[] = messages.filter((msg) => !!msg.embeds[0]?.url).map((msg) =>{return {id: msg.id, time: msg.createdTimestamp, url: msg.embeds[0].url, authorID: msg.author.id}});
         return newMusic.filter((music) => ytdl.validateURL(music.url));
+    }
+
+    private async playMusicByUser(content: PlayDto, message: Message) {
+        const userId = content.url.split(this.userTag)[1].replace('!', '');
+
+        const chasedMusic: cashedMusic[] = await this.dbService.read(DB.CHASED_MUSIC);
+
+        const userMusic = chasedMusic.filter((chased) => chased.authorID === userId);
+
+        if (userMusic.length === 0) {
+            await this.helperService.sendError(message, `У пользователя ${content.url} нет музыки`);
+            return;
+        }
+
+        const toPlay: cashedMusic = sample(userMusic);
+
+        await this.addToQueue(message, toPlay.url);
+    }
+
+    private async searchMusic(message: Message) {
+        const search = message.content.slice(6);
+        const ret: Error | YouTubeSearchResults[] = await new Promise((resolve, reject) => youtubeSearch(search, opts, (err, data) => {
+             if(err) {
+                 resolve(err);
+                 return;
+             }
+             resolve(data);
+         }));
+        const videos = ret as YouTubeSearchResults[];
+        this.suggestedVideos =  videos.slice(0,5).map((video, index) => {return {title: video.title, url: video.link}});
+        await this.sendSuggestedMusic(message, this.suggestedVideos);
+    }
+
+    private async sendSuggestedMusic(message: Message, suggestedVideos: SuggestedMusic[]) {
+        const toSend = suggestedVideos.map((video, index) => `${index +1}: ${video.title}`).join('\n');
+        const embed = new MessageEmbed()
+            .setColor('#50f150')
+            .setTitle(`Выберете трек с помощтю комманды ${PREFIX}select [номер видео]`)
+            .setDescription(toSend);
+        return message.reply(embed);
     }
 }

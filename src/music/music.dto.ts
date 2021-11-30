@@ -19,3 +19,14 @@ export class VolumeDto {
     @Min(0)
     volume: number;
 }
+
+export class SelectDto {
+    @ArgNum(() => ({position: 1}))
+    @Expose()
+    @IsNotEmpty()
+    @Type(() => Number)
+    @IsNumber()
+    @Max(5)
+    @Min(1)
+    select: number;
+}
