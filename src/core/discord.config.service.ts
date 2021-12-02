@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {DiscordModuleOption, TransformPipe, ValidationPipe} from 'discord-nestjs';
-import {PREFIX} from '../core/constants';
-import {TOKEN} from '../core/token';
+import {PREFIX} from './constants';
+import {TOKEN} from './token';
 
 @Injectable()
 export class DiscordConfigService {

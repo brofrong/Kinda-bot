@@ -112,11 +112,6 @@ export class MusicService {
         this.playNext();
     }
 
-    @OnCommand({name: 'test'})
-    async onTest(message: Message) {
-        this.logger.log(message.content);
-    }
-
     @OnCommand({name: 'select'})
     @UsePipes(TransformPipe, ValidationPipe)
     async onSelect(
