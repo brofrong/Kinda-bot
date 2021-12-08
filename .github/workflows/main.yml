@@ -38,5 +38,5 @@ jobs:
         env:
           TOKEN: ${{secrets.TOKEN}}
           YOUTUBE_API_KEY: ${{secrets.YOUTUBE_API_KEY}}
-      - run: forever restartall
+      - run: npm run start:prod
 
