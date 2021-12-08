@@ -2,8 +2,6 @@
 /dist
 /node_modules
 
-/src/core/token.ts
-
 # Logs
 logs
 *.log

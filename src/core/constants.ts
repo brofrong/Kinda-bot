@@ -1,4 +1,6 @@
-export const PREFIX = '!';
+const production = process.env.NODE_ENV === 'production'
+
+export const PREFIX = production ? '!': '/';
 
 export const KINDA_GUILD = '168316514074755072'
 export const BOT_CHANNEL = '837007949556744232'

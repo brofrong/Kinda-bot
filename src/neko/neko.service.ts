@@ -1,4 +1,4 @@
-import {Injectable, Logger} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {Client, ClientProvider, OnCommand} from 'discord-nestjs';
 import {Message, MessageAttachment} from 'discord.js';
 import * as fetch from 'node-fetch';

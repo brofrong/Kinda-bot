@@ -1,4 +1,4 @@
-import {Injectable, Logger} from '@nestjs/common';
+import {Injectable, Logger, UseInterceptors} from '@nestjs/common';
 import {Client, ClientProvider, OnCommand} from 'discord-nestjs';
 import {Message} from 'discord.js';
 import {HelpService} from './help.service';

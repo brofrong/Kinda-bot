@@ -3,30 +3,30 @@ import {
     Client,
     ClientProvider,
     Content,
-    Context, Once,
+    Context,
+    Once,
     OnCommand,
     TransformPipe,
     UsePipes,
     ValidationPipe
 } from 'discord-nestjs';
 import {Message, MessageEmbed, StreamDispatcher, TextChannel, VoiceConnection} from 'discord.js';
+import {sample} from 'lodash';
 import * as moment from 'moment';
+import * as youtubeSearch from 'youtube-search';
 import {YouTubeSearchResults} from 'youtube-search';
 import * as ytdl from 'ytdl-core';
-import {DB, MUSIC_CHANNEL, PREFIX, WELCOME_CHANNEL} from '../core/constants';
+import {DB, MUSIC_CHANNEL, PREFIX} from '../core/constants';
 import {DbService} from '../core/db/db.service';
 import {HelperService} from '../core/helper.service';
-import {YOUTUBE_API_KEY} from '../core/token';
 import {PlayDto, SelectDto, VolumeDto} from './music.dto';
-import {sample} from 'lodash';
-import * as youtubeSearch from "youtube-search";
 
 export type cashedMusic = {id: string, time: number, url: string, authorID: string};
 export type SuggestedMusic = {title: string, url: string}
 
 const opts: youtubeSearch.YouTubeSearchOptions = {
     maxResults: 10,
-    key: YOUTUBE_API_KEY
+    key: process.env.YOUTUBE_API_KEY
 };
 
 @Injectable()

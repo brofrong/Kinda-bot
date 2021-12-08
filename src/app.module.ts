@@ -1,4 +1,5 @@
 import {Module} from '@nestjs/common';
+import {ConfigModule} from '@nestjs/config';
 import {DiscordModule} from 'discord-nestjs';
 import {DiscordConfigService} from './core/discord.config.service';
 import {DbService} from './core/db/db.service';
@@ -14,7 +15,10 @@ import {UsefullService} from './usefull/usefull.service';
         DiscordModule.forRootAsync({
             useClass: DiscordConfigService,
         }),
-
+        ConfigModule.forRoot({
+            envFilePath: './development.env',
+            isGlobal: true,
+        }),
         HelpModule,
     ],
     providers: [
@@ -24,8 +28,6 @@ import {UsefullService} from './usefull/usefull.service';
         DbService,
         HelperService,
         MusicService,
-
-
     ]
 })
 export class AppModule {
