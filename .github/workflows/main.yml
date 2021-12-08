@@ -50,16 +50,16 @@ jobs:
             git pull
             npm run build
             cat << EOF > development.env
-            TOKEN=${{secret.TOKEN}}
-            YOUTUBE_API_KEY=${{secret.YOUTUBE_API_KEY}}
+            TOKEN= ${{secrets.TOKEN}}
+            YOUTUBE_API_KEY= ${{secrets.YOUTUBE_API_KEY}}
             EOF
             forever restartall
           # Hostname or IP address of the server.
-          host: ${{ secret.HOST }}
+          host: ${{ secrets.HOST }}
           # Username for authentication.
-          username: ${{secret.USERNAME}}
+          username: ${{ secrets.USERNAME }}
           # File Location or string that contains a private key for either key-based or hostbased user authentication (OpenSSH format)
-          privateKey:  ${{ secret.PRIVATE_KEY }}
+          privateKey:  ${{ secrets.PRIVATE_KEY }}
 
           # For an encrypted private key, this is the passphrase used to decrypt it.
 #           passphrase: # optional
