@@ -38,6 +38,7 @@ jobs:
       - run: npm run build
       
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     
     steps: 
@@ -50,8 +51,8 @@ jobs:
             git pull
             npm run build
             cat << EOF > development.env
-            TOKEN= ${{secrets.TOKEN}}
-            YOUTUBE_API_KEY= ${{secrets.YOUTUBE_API_KEY}}
+            TOKEN=${{secrets.TOKEN}}
+            YOUTUBE_API_KEY=${{secrets.YOUTUBE_API_KEY}}
             EOF
             forever restartall
           # Hostname or IP address of the server.
