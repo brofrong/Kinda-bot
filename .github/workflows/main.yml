@@ -49,6 +49,7 @@ jobs:
           command: |
             cd ~/Kinda-bot/
             git pull
+            npm i
             npm run build
             cat << EOF > development.env
             TOKEN=${{secrets.TOKEN}}
